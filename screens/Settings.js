@@ -1,10 +1,10 @@
 // screens/Settings.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Platform, ScrollView, Image } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SoundManager from '../utils/sounds';
-import { Image } from 'react-native';
 import colosseum from '../assets/colosseum.png';
 import londonEye from '../assets/london-eye.png';
 import galataTower from '../assets/galata-tower.png';

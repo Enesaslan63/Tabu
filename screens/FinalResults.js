@@ -1,5 +1,19 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, StatusBar, ScrollView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
+  Modal,
+  Dimensions,
+  Animated,
+  Easing,
+  Platform,
+  Image,
+  ScrollView
+} from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import heart from '../assets/heart.png';
 import exclamationMark from '../assets/exclamation-mark.png';
 import paperPlane from '../assets/paper-plane.png';
@@ -7,6 +21,12 @@ import colosseum from '../assets/colosseum.png';
 import londonEye from '../assets/london-eye.png';
 import galataTower from '../assets/galata-tower.png';
 import pyramids from '../assets/pyramids.png';
+ 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { AntDesign } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import SoundManager from '../utils/sounds';
 
 const translations = {
   tr: {
@@ -45,6 +65,13 @@ export default function FinalResults({ route, navigation }) {
     silentMode = false,
   } = route.params || {};
   const t = translations[language];
+
+  // Oyun bittiğinde çalışan useEffect
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      SoundManager.playFinalSound();
+    }
+  }, []);
 
   return (
     <View style={styles.container}>

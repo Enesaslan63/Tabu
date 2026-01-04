@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Animated, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Platform, Dimensions, Image } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
@@ -302,6 +302,12 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     marginRight: 8,
+  },
+  bottomBanner: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    alignSelf: 'center',
   },
 });
 

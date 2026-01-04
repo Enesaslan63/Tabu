@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Vibration, StatusBar, Image, Modal, SafeAreaView, Platform } from 'react-native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Vibration, Modal, SafeAreaView, Platform, ScrollView } from 'react-native';
+import { Image } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import wordsEasy from '../data/words_easy.json';
@@ -182,7 +184,8 @@ const Game = ({ route, navigation }) => {
           }
         }
       } catch (e) {
-        // noop
+        // Ayarlar yüklenirken hata oluştuysa, varsayılan değerler kullanılacaktır.
+        console.error("Ayarlar yüklenirken hata oluştu:", e);
       }
     })();
     
@@ -245,7 +248,16 @@ const Game = ({ route, navigation }) => {
               mode: 'both',
             }));
           }
-        } catch (_) {}
+        } catch (e) {
+          console.error("Kullanıcı kelimeleri yüklenirken hata oluştu:", e);
+          if (!cancelled) {
+            setIsPaused(true);
+            setShowTurnModal(false);
+            setShowCountdownModal(false);
+            setErrorModal({ visible: true, title: translations[language].error, message: translations[language].noWordsFound, shouldGoBack: true });
+          }
+          return;
+        }
         // Sessiz sinema + custom seçiliyken kullanıcı kartı yoksa charades'a düş
         if (silentMode && baseWords.length === 0) {
           baseWords = buildCharadesPool(gameMode);
@@ -722,7 +734,7 @@ const Game = ({ route, navigation }) => {
         </View>
         {isRoundOver ? (
           <View style={styles.summaryContainer}>
-            <View style={styles.notebookPage}>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.notebookPage}>
               <Text style={styles.summaryTitle}>{translations[language].roundOver}</Text>
               {!!roundInfoText && (
                 <Text style={styles.roundInfo}>{roundInfoText}</Text>
@@ -784,7 +796,7 @@ const Game = ({ route, navigation }) => {
                 </View>
               </TouchableOpacity>
             </View>
-            </View>
+            </ScrollView>
           </View>
         ) : (
           <View style={styles.scrollContent}>
@@ -803,7 +815,7 @@ const Game = ({ route, navigation }) => {
               
               <View style={styles.passTabooContainer}>
                 <View style={styles.passContainer}>
-                  <Ionicons name="arrow-forward" size={20} color="#8B4513" />
+                  <Ionicons name="arrow-forward" size={20} color="#FFD700" />
                   <Text style={styles.passLabel}>{translations[language].pass}</Text>
                   <Text style={styles.passCount}>{passCount}</Text>
                 </View>
@@ -1093,6 +1105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingTop: 48,
+    // justifyContent: 'center', // Kaldırıldı
     // paddingBottom removed as flex will handle it
   },
   scrollContent: {
@@ -1218,7 +1231,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 0.8,
   },
   tabooWordsContainer: {
-    marginBottom: 14,
+    marginBottom: 20,
   },
   tabooCard: {
     padding: Platform.OS === 'android' ? 15 : 18,
@@ -1233,7 +1246,7 @@ const styles = StyleSheet.create({
     borderColor: '#F44336', // Red border for taboo
   },
   tabooTitle: {
-    fontSize: 22,
+    fontSize: 30,
     color: '#9C27B0',
     marginBottom: 12,
     textAlign: 'center',
@@ -1248,22 +1261,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabooWord: {
-    fontSize: 21,
+    fontSize: 16,
     color: '#F44336',
     marginBottom: 6,
     fontFamily: 'IndieFlower',
     textDecorationLine: 'line-through',
-    textTransform: 'uppercase',
-    fontWeight: Platform.OS === 'ios' ? 'bold' : 'normal',
-    textShadowColor: '#F44336',
-    textShadowOffset: { width: 0.6, height: 0.6 },
-    textShadowRadius: 0.8,
+    marginRight: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    backgroundColor: 'rgba(0,0,0,0.03)',
   },
   tabooWordSummary: {
     color: '#EF5350',
     textDecorationLine: 'line-through',
     fontFamily: 'IndieFlower',
-    fontSize: Platform.OS === 'android' ? 17 : 18,
+    fontSize: 16,
+    marginRight: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    backgroundColor: 'rgba(0,0,0,0.03)',
   },
   teamsContainer: {
     flexDirection: 'row',
@@ -1343,9 +1361,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   summaryContainer: {
-    flex: 1,
-    justifyContent: 'center',
+    flex: 1, // Eklendi
     alignItems: 'center',
+    width: '100%',
   },
   notebookPage: {
     backgroundColor: '#fff',
@@ -1358,6 +1376,10 @@ const styles = StyleSheet.create({
     elevation: 6,
     borderWidth: 2,
     borderColor: '#8B4513',
+    width: '100%',
+    justifyContent: 'center', // Eklendi
+    // height: 'auto', // İçeriğe göre yükseklik ayarı - ScrollView için bu gerekli değil
+    flexGrow: 1, // ScrollView içeriğinin esnek olmasını sağlar
   },
   summaryTitle: {
     fontSize: Platform.OS === 'android' ? 29 : 32, // Adjusted font size
@@ -1630,6 +1652,12 @@ const styles = StyleSheet.create({
     fontSize: Platform.OS === 'android' ? 17 : 18,
     textAlign: 'center',
     fontFamily: 'IndieFlower',
+  },
+  bottomBanner: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    alignSelf: 'center',
   },
 });
 

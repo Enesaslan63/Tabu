@@ -4,7 +4,7 @@
     "slug": "TabuFun",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.jpg",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -16,17 +16,31 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 22,
+      "icon": "./assets/icon.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.muhammedenesaslan.TabuFun"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
-    ]
+      "expo-font",
+      ["expo-build-properties", {
+        "android": {
+          "usesCleartextTraffic": true,
+          "allowBackup": false
+        }
+      }]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "44fcaa37-0977-4476-86d8-f45579c2177f"
+      }
+    }
   }
 }
